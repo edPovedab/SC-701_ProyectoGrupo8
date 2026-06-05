@@ -1,0 +1,32 @@
+## .NET Core
+bin/
+obj/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+
+## VS Code
+.vscode/
+
+## Base de datos local
+*.mdf
+*.ldf
+*.sqlite
+*.db
+
+## Credenciales - MUY IMPORTANTE
+appsettings.Development.json
+
+## Publicación
+publish/
+
+## NuGet
+*.nupkg
+packages/
+
+## Logs y temporales
+*.log
+.DS_Store
+Thumbs.db
