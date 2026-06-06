@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="PW.News8.API/PW.News8.API.csproj" />
+  <Project Path="PW.News8.Shared/PW.News8.Shared.csproj" />
+  <Project Path="PW.News8.Web/PW.News8.Web.csproj" />
+</Solution>
