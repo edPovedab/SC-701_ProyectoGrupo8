@@ -3,13 +3,13 @@ using PW.News8.Shared.Interfaces;
 
 namespace PW.News8.API.Readers
 {
-    /// <summary>
+ 
     /// Lee una fuente HTML y extrae ítems genéricos buscando el contenedor
     /// repetido más común en la página (heurística simple: agrupa nodos por
     /// su combinación de tag + clase CSS y toma el grupo más numeroso).
     /// Pensado como fallback simple; fuentes HTML muy particulares podrían
     /// necesitar selectores CSS específicos configurados en AppSettings.
-    /// </summary>
+
     public class HtmlSourceReader : ISourceReader
     {
         public string SupportedType => "html";

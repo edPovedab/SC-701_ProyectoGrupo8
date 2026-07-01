@@ -4,7 +4,6 @@ using PW.News8.API.Data;
 using PW.News8.API.Repositories;
 using PW.News8.Shared.Interfaces;
 using PW.News8.API.Services;
-using PW.News8.API.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 

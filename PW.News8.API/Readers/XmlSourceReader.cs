@@ -3,11 +3,11 @@ using PW.News8.Shared.Interfaces;
 
 namespace PW.News8.API.Readers
 {
-    /// <summary>
+
     /// Lee una fuente XML/RSS. Soporta el formato RSS estándar (canal con
     /// nodos &lt;item&gt;) y, como respaldo genérico, cualquier XML tomando
     /// los hijos directos del primer nodo repetido que encuentre.
-    /// </summary>
+
     public class XmlSourceReader : ISourceReader
     {
         public string SupportedType => "xml";

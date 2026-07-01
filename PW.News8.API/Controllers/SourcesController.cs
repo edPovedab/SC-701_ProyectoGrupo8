@@ -40,7 +40,7 @@ namespace PW.News8.API.Controllers
             _logger = logger;
         }
 
-        /// <summary>GET /api/sources — Lista todas las fuentes registradas.</summary>
+        /// GET /api/sources — Lista todas las fuentes registradas.
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SourceDto>>> GetSources(CancellationToken cancellationToken)
         {
@@ -57,7 +57,7 @@ namespace PW.News8.API.Controllers
             }
         }
 
-        /// <summary>GET /api/sources/{id} — Obtiene una fuente puntual.</summary>
+        /// GET /api/sources/{id} — Obtiene una fuente puntual.
         [HttpGet("{id:int}")]
         public async Task<ActionResult<SourceDto>> GetSourceById(int id, CancellationToken cancellationToken)
         {
@@ -77,7 +77,7 @@ namespace PW.News8.API.Controllers
             }
         }
 
-        /// <summary>GET /api/sources/{id}/items — Lista los ítems de una fuente.</summary>
+        ///GET /api/sources/{id}/items — Lista los ítems de una fuente.
         [HttpGet("{id:int}/items")]
         public async Task<ActionResult<IEnumerable<SourceItemDto>>> GetSourceItems(int id, CancellationToken cancellationToken)
         {
@@ -97,7 +97,7 @@ namespace PW.News8.API.Controllers
                     "Ocurrió un error inesperado al obtener los ítems.");
             }
         }
-        /// <summary>GET /api/sources/{id}/fetch — Lee la fuente en vivo (JSON/XML/HTML) sin guardar nada.</summary>
+        /// GET /api/sources/{id}/fetch — Lee la fuente en vivo (JSON/XML/HTML) sin guardar nada.
         [HttpGet("{id:int}/fetch")]
         public async Task<ActionResult<SourceFetchResultDto>> FetchSource(int id, CancellationToken cancellationToken)
         {
@@ -117,7 +117,7 @@ namespace PW.News8.API.Controllers
             }
         }
 
-        /// <summary>POST /api/sources/{id}/items — Guarda el ítem que el usuario eligió del fetch en vivo.</summary>
+        /// POST /api/sources/{id}/items — Guarda el ítem que el usuario eligió del fetch en vivo.
         [HttpPost("{id:int}/items")]
         [Authorize] // Solo usuarios autorizados pueden guardar (según el enunciado)
         public async Task<ActionResult<SourceItemDto>> SaveFetchedItem(int id, [FromBody] SaveFetchedItemDto dto, CancellationToken cancellationToken)
@@ -141,10 +141,8 @@ namespace PW.News8.API.Controllers
             }
         }
 
-        /// <summary>
         /// GET /api/sources/{id}/download — Descarga la fuente y todos sus ítems
         /// como un archivo JSON indentado: source_{id}_{fecha}.json.
-        /// </summary>
         [HttpGet("{id:int}/download")]
         public async Task<IActionResult> DownloadSource(int id, CancellationToken cancellationToken)
         {

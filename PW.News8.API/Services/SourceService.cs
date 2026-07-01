@@ -5,12 +5,11 @@ using PW.News8.Shared.Models;
 
 namespace PW.News8.API.Services
 {
-    /// <summary>
+
     /// Implementa <see cref="ISourceService"/> apoyándose exclusivamente en los
     /// repositorios ya existentes (ISourceRepository / ISourceItemRepository).
     /// Toda la lógica de negocio de lectura, exportación e importación vive aquí,
     /// para que los controladores se mantengan delgados (sin lógica de negocio).
-    /// </summary>
     public class SourceService : ISourceService
     {
         private readonly ISourceRepository _sourceRepository;
@@ -104,7 +103,7 @@ namespace PW.News8.API.Services
             string? secret = null;
             if (source.RequiresSecret)
             {
-                // Convención de clave: "Source:{Id}:Secret" — coordinar con persona 2 (AppSettings).
+                // Convención de clave: "Source:{Id}:Secret"
                 var setting = await _appSettingRepository.GetByKeyAsync($"Source:{source.Id}:Secret");
                 secret = setting?.Value;
             }
@@ -174,7 +173,7 @@ namespace PW.News8.API.Services
 
                 if (!existingJsonSet.Add(json))
                 {
-                    duplicateCount++; // ya existía -> duplicado
+                    duplicateCount++; // ítem duplicado, se ignora
                     continue;
                 }
 

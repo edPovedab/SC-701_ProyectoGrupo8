@@ -1,10 +1,5 @@
 ﻿namespace PW.News8.Shared.DTOs
 {
-    /// Paquete completo de una fuente (Source) y sus ítems, usado como formato
-    /// de intercambio para los endpoints de Download (GET) y Upload (POST).
-    /// El mismo formato que se descarga es el que se espera al subir un archivo,
-    /// de forma que el ciclo exportar/importar sea simétrico.
-
     public class SourceDownloadDto
     {
         public SourceDto Source { get; set; } = new();
