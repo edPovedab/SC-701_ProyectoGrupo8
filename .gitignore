@@ -30,3 +30,5 @@ packages/
 *.log
 .DS_Store
 Thumbs.db
+/PW.News8.API/appsettings.json
+/PW.News8.API/appsettings.json

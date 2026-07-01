@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PW.News8.API.Data;
 using PW.News8.API.Repositories;
 using PW.News8.Shared.Interfaces;
+using PW.News8.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,10 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<ISourceRepository, SourceRepository>();
 builder.Services.AddScoped<ISourceItemRepository, SourceItemRepository>();
 builder.Services.AddScoped<IAppSettingRepository, AppSettingRepository>();
+builder.Services.AddScoped<ISourceService, SourceService>();
+builder.Services.AddScoped<ISourceReader, PW.News8.API.Readers.JsonSourceReader>();
+builder.Services.AddScoped<ISourceReader, PW.News8.API.Readers.XmlSourceReader>();
+builder.Services.AddScoped<ISourceReader, PW.News8.API.Readers.HtmlSourceReader>();
 
 // ── CORS (para que PW.News8.Web pueda llamar a la API) ────────────────────────
 builder.Services.AddCors(options =>
