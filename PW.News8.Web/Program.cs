@@ -1,7 +1,19 @@
+using PW.News8.Web.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// ── HttpClient tipado hacia PW.News8.API ──────────────────────────────────────
+// La URL base se lee de appsettings.json (ApiSettings:BaseUrl) para que el
+// puerto de la API se pueda ajustar sin recompilar.
+builder.Services.AddHttpClient<ISourceApiService, SourceApiService>(client =>
+{
+    var baseUrl = builder.Configuration["ApiSettings:BaseUrl"]
+                  ?? throw new InvalidOperationException("Falta configurar ApiSettings:BaseUrl en appsettings.json.");
+    client.BaseAddress = new Uri(baseUrl);
+});
 
 var app = builder.Build();
 

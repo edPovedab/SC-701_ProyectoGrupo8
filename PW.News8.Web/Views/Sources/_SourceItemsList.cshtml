@@ -1,0 +1,28 @@
+﻿@model IEnumerable<PW.News8.Shared.DTOs.SourceItemDto>
+
+@if (Model is null || !Model.Any())
+{
+    <partial name="_EmptyState" model='"Esta fuente todavía no tiene ítems guardados."' />
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle items-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Título</th>
+                    <th>Enlace</th>
+                    <th>Guardado</th>
+                    <th class="text-end">Detalle</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <partial name="_SourceItemRow" model="item" />
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Subir JSON";
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Sources" asp-action="Index">Fuentes</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Subir JSON</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="h4 mb-2">Subir archivo JSON</h1>
+                <p class="text-muted">
+                    Sube un archivo generado previamente con "Descargar JSON". Los ítems
+                    ya existentes (mismo contenido) se detectan como duplicados y se omiten.
+                </p>
+
+                <form id="upload-form" class="mt-4">
+                    <div class="mb-3">
+                        <label for="jsonFile" class="form-label">Archivo (.json)</label>
+                        <input class="form-control" type="file" id="jsonFile" name="file" accept=".json" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="btn-upload">
+                        <span class="spinner-border spinner-border-sm d-none" id="upload-spinner" role="status"></span>
+                        Subir
+                    </button>
+                    <a asp-controller="Sources" asp-action="Index" class="btn btn-link">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/sources.js" asp-append-version="true"></script>
+    <script>
+        $(function () {
+        $('#upload-form').on('submit', function (e) {
+        e.preventDefault();
+        uploadJsonFile($('#jsonFile')[0].files[0]);
+        });
+        });
+    </script>
+}

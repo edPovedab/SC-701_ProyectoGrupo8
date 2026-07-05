@@ -1,0 +1,15 @@
+﻿@model IEnumerable<PW.News8.Shared.DTOs.SourceDto>
+
+@if (Model is null || !Model.Any())
+{
+    <partial name="_EmptyState" model='"No hay fuentes registradas todavía."' />
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var source in Model)
+        {
+            <partial name="_SourceCard" model="source" />
+        }
+    </div>
+}

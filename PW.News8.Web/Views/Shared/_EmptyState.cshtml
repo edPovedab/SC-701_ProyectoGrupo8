@@ -1,0 +1,8 @@
+﻿@* Parcial reutilizable: mensaje de "sin datos".
+   Uso: <partial name="_EmptyState" model='"No hay fuentes registradas."' /> *@
+@model string
+
+<div class="empty-state text-center text-muted py-5">
+    <div class="empty-state-icon mb-2">&#128203;</div>
+    <p class="mb-0">@Model</p>
+</div>

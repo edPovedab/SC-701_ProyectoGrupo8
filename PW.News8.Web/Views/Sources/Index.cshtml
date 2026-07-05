@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Fuentes";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Fuentes de noticias</h1>
+        <p class="text-muted mb-0">Fuentes registradas para lectura JSON, XML o HTML.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Sources" asp-action="Upload" class="btn btn-outline-secondary">
+            Subir JSON
+        </a>
+        <button type="button" id="btn-refresh-sources" class="btn btn-primary">
+            Actualizar
+        </button>
+    </div>
+</div>
+
+<div id="sources-container">
+    <div class="text-center text-muted py-5" id="sources-loading">
+        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+        Cargando fuentes…
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/sources.js" asp-append-version="true"></script>
+    <script>
+        $(function () {
+        loadSourcesList();
+
+        $('#btn-refresh-sources').on('click', function () {
+        loadSourcesList();
+        });
+        });
+    </script>
+}

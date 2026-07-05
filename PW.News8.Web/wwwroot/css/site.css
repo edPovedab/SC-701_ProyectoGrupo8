@@ -29,3 +29,87 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* ── PW.News8 — estilos propios ─────────────────────────────────────────── */
+
+.brand-mark {
+    color: #6ea8fe;
+    font-weight: 800;
+}
+
+.hero {
+    background: linear-gradient(135deg, #0d47a1 0%, #1565c0 45%, #1976d2 100%);
+}
+
+.feature-card {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .feature-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+    }
+
+.feature-icon {
+    font-size: 1.75rem;
+}
+
+.source-card {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .source-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+    }
+
+.type-badge {
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+}
+
+.badge-type-json {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.badge-type-xml {
+    background-color: #fff3e0;
+    color: #ef6c00;
+}
+
+.badge-type-html {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.badge-type-default {
+    background-color: #eceff1;
+    color: #455a64;
+}
+
+.secret-badge {
+    background-color: #fdecea;
+    color: #c62828;
+    font-size: 0.7rem;
+}
+
+.empty-state-icon {
+    font-size: 2.5rem;
+}
+
+.items-table td {
+    vertical-align: middle;
+}
+
+.json-preview {
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.85rem;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.375rem;
+}

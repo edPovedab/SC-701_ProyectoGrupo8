@@ -1,0 +1,61 @@
+﻿@model PW.News8.Shared.DTOs.SourceItemDto
+
+@{
+    string? title = null;
+    string? url = null;
+    try
+    {
+        using var doc = System.Text.Json.JsonDocument.Parse(Model.Json);
+        var root = doc.RootElement;
+        foreach (var key in new[] { "title", "Title", "Titulo", "titulo" })
+        {
+            if (root.TryGetProperty(key, out var titleEl))
+            {
+                title = titleEl.GetString();
+                break;
+            }
+        }
+        foreach (var key in new[] { "url", "Url", "link", "Link" })
+        {
+            if (root.TryGetProperty(key, out var urlEl))
+            {
+                url = urlEl.GetString();
+                break;
+            }
+        }
+    }
+    catch (System.Text.Json.JsonException)
+    {
+       
+    }
+}
+
+<tr class="source-item-row">
+    <td class="text-muted">#@Model.Id</td>
+    <td>
+        @if (!string.IsNullOrWhiteSpace(title))
+        {
+            @title
+        }
+        else
+        {
+            <code class="small">@(Model.Json.Length > 80 ? Model.Json[..80] + "…" : Model.Json)</code>
+        }
+    </td>
+    <td>
+        @if (!string.IsNullOrWhiteSpace(url))
+        {
+            <a href="@url" target="_blank" rel="noopener">Abrir enlace</a>
+        }
+        else
+        {
+            <span class="text-muted">—</span>
+        }
+    </td>
+    <td class="text-nowrap">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+    <td class="text-end">
+        <button type="button" class="btn btn-sm btn-outline-secondary btn-view-json" data-json='@Model.Json'>
+            Ver JSON
+        </button>
+    </td>
+</tr>
