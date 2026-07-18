@@ -1,0 +1,86 @@
+﻿@model PW.News8.Shared.DTOs.NewsCatalogDto
+@{
+    ViewData["Title"] = "Noticias";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-1">Muro de noticias</h1>
+        <p class="text-muted mb-0">Titulares en vivo y búsqueda por tema, vía NewsAPI.</p>
+    </div>
+    <span class="badge news-live-badge">
+        <span class="live-dot"></span> En vivo
+    </span>
+</div>
+
+<div class="card news-filters-card mb-4">
+    <div class="card-body">
+        <ul class="nav nav-pills mb-3" id="news-mode-tabs">
+            <li class="nav-item">
+                <button type="button" class="nav-link active" id="tab-headlines" data-mode="headlines">Titulares</button>
+            </li>
+            <li class="nav-item">
+                <button type="button" class="nav-link" id="tab-search" data-mode="search">Buscar por tema</button>
+            </li>
+        </ul>
+
+        <div id="panel-headlines">
+            <div class="row g-3 align-items-end">
+                <div class="col-sm-4 col-md-3">
+                    <label class="form-label small text-muted mb-1">País</label>
+                    <select id="filter-country" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        @foreach (var c in Model.Countries)
+                        {
+                            <option value="@c.Key">@c.Value</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-8 col-md-6">
+                    <label class="form-label small text-muted mb-1">Categoría</label>
+                    <div class="d-flex flex-wrap gap-2" id="category-pills">
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-secondary category-pill" data-category="@cat">@cat</button>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" id="btn-apply-headlines" class="btn btn-primary btn-sm w-100">Aplicar filtros</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="panel-search" class="d-none">
+            <div class="row g-3 align-items-end">
+                <div class="col-sm-7">
+                    <label class="form-label small text-muted mb-1">Tema o palabra clave</label>
+                    <input type="text" id="filter-keyword" class="form-control form-control-sm"
+                           placeholder="Ej. inteligencia artificial, elecciones, fútbol...">
+                </div>
+                <div class="col-sm-3">
+                    <label class="form-label small text-muted mb-1">Idioma</label>
+                    <select id="filter-language" class="form-select form-select-sm">
+                        <option value="es">Español</option>
+                        <option value="en">Inglés</option>
+                        <option value="">Cualquiera</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <button type="button" id="btn-apply-search" class="btn btn-primary btn-sm w-100">Buscar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="news-wall-container">
+    <div class="text-center text-muted py-5" id="news-loading">
+        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+        Cargando noticias…
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/news.js" asp-append-version="true"></script>
+}

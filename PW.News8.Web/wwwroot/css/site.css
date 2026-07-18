@@ -113,3 +113,73 @@ body {
     padding: 1rem;
     border-radius: 0.375rem;
 }
+
+/* ── Módulo Noticias (NewsAPI) — elemento sorpresa ──────────────────────── */
+
+.news-live-badge {
+    background-color: #fdecea;
+    color: #c62828;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #e53935;
+    display: inline-block;
+    animation: news-pulse 1.6s infinite;
+}
+
+@keyframes news-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.5);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(229, 57, 53, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(229, 57, 53, 0);
+    }
+}
+
+.news-filters-card {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background-color: #f8f9fb;
+}
+
+.category-pill {
+    text-transform: capitalize;
+}
+
+.news-card {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    overflow: hidden;
+}
+
+    .news-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+    }
+
+.news-card-img {
+    height: 160px;
+    object-fit: cover;
+}
+
+.news-source-badge {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}

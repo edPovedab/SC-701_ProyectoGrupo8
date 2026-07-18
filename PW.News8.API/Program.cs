@@ -26,6 +26,18 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 // ── HttpClient ────────────────────────────────────────────────────────────────
 builder.Services.AddHttpClient();
 
+// ── NewsAPI (elemento sorpresa: muro de noticias) ─────────────────────────────
+builder.Services.AddHttpClient<INewsService, NewsApiService>((sp, client) =>
+{
+    var baseUrl = builder.Configuration["NewsApiSettings:BaseUrl"] ?? "https://newsapi.org/v2/";
+    var apiKey = builder.Configuration["NewsApiSettings:ApiKey"];
+
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.Add("User-Agent", "PWNews8/1.0 (+https://localhost:7060)");
+    if (!string.IsNullOrWhiteSpace(apiKey))
+        client.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
+});
+
 // ── Repositorios (Scoped: una instancia por request) ─────────────────────────
 builder.Services.AddScoped<ISourceRepository, SourceRepository>();
 builder.Services.AddScoped<ISourceItemRepository, SourceItemRepository>();

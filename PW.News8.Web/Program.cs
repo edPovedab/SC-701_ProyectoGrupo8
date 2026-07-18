@@ -15,13 +15,20 @@ builder.Services.AddHttpClient<ISourceApiService, SourceApiService>(client =>
     client.BaseAddress = new Uri(baseUrl);
 });
 
+// ── HttpClient tipado hacia PW.News8.API para el módulo de noticias (elemento sorpresa) ──
+builder.Services.AddHttpClient<INewsClientService, NewsClientService>(client =>
+{
+    var baseUrl = builder.Configuration["ApiSettings:BaseUrl"]
+                  ?? throw new InvalidOperationException("Falta configurar ApiSettings:BaseUrl en appsettings.json.");
+    client.BaseAddress = new Uri(baseUrl);
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// configuracion del middleware de la aplicación para manejar errores y seguridad en producción
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
