@@ -14,6 +14,12 @@ builder.Services.AddHttpClient<ISourceApiService, SourceApiService>(client =>
                   ?? throw new InvalidOperationException("Falta configurar ApiSettings:BaseUrl en appsettings.json.");
     client.BaseAddress = new Uri(baseUrl);
 });
+builder.Services.AddHttpClient<IConfigApiService, ConfigApiService>(client =>
+{
+    var baseUrl = builder.Configuration["ApiSettings:BaseUrl"]
+                  ?? throw new InvalidOperationException("Falta configurar ApiSettings:BaseUrl en appsettings.json.");
+    client.BaseAddress = new Uri(baseUrl);
+});
 
 // ── HttpClient tipado hacia PW.News8.API para el módulo de noticias (elemento sorpresa) ──
 builder.Services.AddHttpClient<INewsClientService, NewsClientService>(client =>

@@ -1,0 +1,47 @@
+@model List<PW.News8.Shared.DTOs.UserRoleDto>
+@{
+    ViewData["Title"] = "Configuración";
+}
+
+<h2 class="mb-4">Gestión de Usuarios y Roles</h2>
+
+@if (TempData["Message"] != null)
+{
+    var success = TempData["Success"]?.ToString() == "True";
+    <div class="alert @(success ? "alert-success" : "alert-danger")">
+        @TempData["Message"]
+    </div>
+}
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+    <tr>
+        <th>Email</th>
+        <th>Rol actual</th>
+        <th>Cambiar rol</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Email</td>
+            <td>@user.Role</td>
+            <td>
+                <form method="post" asp-action="AssignRole">
+                    <input type="hidden" name="email" value="@user.Email" />
+                    <div class="d-flex gap-2">
+                        <select name="role" class="form-select form-select-sm">
+                            <option value="Admin" selected="@(user.Role == "Admin")">Admin</option>
+                            <option value="Analista" selected="@(user.Role == "Analista")">Analista</option>
+                            <option value="Gestor" selected="@(user.Role == "Gestor")">Gestor</option>
+                            <option value="ServicioAlCliente" selected="@(user.Role == "ServicioAlCliente")">Servicio al Cliente</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
