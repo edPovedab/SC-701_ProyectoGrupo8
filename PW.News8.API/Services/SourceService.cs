@@ -190,7 +190,68 @@ namespace PW.News8.API.Services
 
             return SourceUploadResultDto.Success(source.Id, newEntities.Count, duplicateCount);
         }
+        public async Task<StandardItemDto?> ExportItemStandardAsync(int itemId, CancellationToken cancellationToken = default)
+        {
+            var item = await _sourceItemRepository.GetByIdAsync(itemId);
+            if (item is null || item.Source is null)
+                return null;
 
+            Dictionary<string, object>? fields = null;
+            try
+            {
+                fields = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(item.Json);
+            }
+            catch (System.Text.Json.JsonException)
+            {
+               
+            }
+
+            string? Get(params string[] keys)
+            {
+                if (fields is null) return null;
+                foreach (var key in keys)
+                {
+                    var match = fields.FirstOrDefault(kv => string.Equals(kv.Key, key, StringComparison.OrdinalIgnoreCase));
+                    if (!match.Equals(default(KeyValuePair<string, object>)) && match.Value is not null)
+                        return match.Value.ToString();
+                }
+                return null;
+            }
+
+            return new StandardItemDto
+            {
+                ExportedAt = item.CreatedAt,
+                SourceName = item.Source.Name,
+                Id = item.Id.ToString(),
+                Name = Get("name", "title") ?? item.Source.Name,
+                Category = Get("category") ?? item.Source.ComponentType,
+                Description = Get("description", "body", "text") ?? string.Empty,
+                ImageUrl = Get("image_url", "imageUrl", "thumbnail") ?? string.Empty,
+                Tags = new List<string>()
+            };
+        }
+
+        public async Task<SourceItemDto?> ImportStandardItemAsync(int sourceId, StandardItemDto standardItem, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(standardItem);
+
+            var source = await _sourceRepository.GetByIdAsync(sourceId);
+            if (source is null)
+                return null;
+
+            var json = System.Text.Json.JsonSerializer.Serialize(standardItem);
+
+            var entity = new SourceItem
+            {
+                SourceId = sourceId,
+                Json = json,
+                CreatedAt = DateTime.Now
+            };
+
+            await _sourceItemRepository.AddAsync(entity);
+
+            return MapToItemDto(entity, source.Name);
+        }
         private static SourceDto MapToDto(Source source) => new()
         {
             Id = source.Id,

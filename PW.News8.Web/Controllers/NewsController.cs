@@ -23,8 +23,7 @@ namespace PW.News8.Web.Controllers
             return View(catalog);
         }
 
-        // GET /News/WallPartial?mode=headlines&country=us&category=technology&q=
-        // GET /News/WallPartial?mode=search&q=tema&language=es
+        // Metodo get para obtener el muro de noticias parcial, que puede ser utilizado para actualizar dinámicamente la sección de noticias en la vista principal.
         [HttpGet]
         public async Task<IActionResult> WallPartial(
             string mode,

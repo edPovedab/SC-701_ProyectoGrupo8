@@ -3,12 +3,8 @@ using PW.News8.Shared.Interfaces;
 
 namespace PW.News8.API.Readers
 {
-    /// 
-    /// Lee una fuente cuyo contenido es JSON (array de objetos o un objeto
-    /// contenedor con un array adentro) y lo convierte a una lista genérica
-    /// de diccionarios para que pueda mostrarse en el frontend sin acoplar
-    /// el reader a un modelo de noticia específico.
-    /// 
+
+    //lee una fuente de datos en formato JSON desde una URL y la convierte en un objeto SourceReadResult
     public class JsonSourceReader : ISourceReader
     {
         public string SupportedType => "json";

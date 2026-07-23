@@ -37,5 +37,10 @@ namespace PW.News8.Shared.Interfaces
         /// duplicados (mismo contenido Json ya almacenado) e inserta el resto.
 
         Task<SourceUploadResultDto> UploadSourceItemsAsync(SourceDownloadDto payload, CancellationToken cancellationToken = default);
+        /// Exporta un ítem puntual en el formato estándar acordado entre grupos.
+        Task<StandardItemDto?> ExportItemStandardAsync(int itemId, CancellationToken cancellationToken = default);
+
+        /// Importa un ítem recibido en formato estándar de otro grupo, adjuntándolo a una fuente propia.
+        Task<SourceItemDto?> ImportStandardItemAsync(int sourceId, StandardItemDto standardItem, CancellationToken cancellationToken = default);
     }
 }

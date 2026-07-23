@@ -141,8 +141,53 @@ namespace PW.News8.API.Controllers
             }
         }
 
-        /// GET /api/sources/{id}/download — Descarga la fuente y todos sus ítems
-        /// como un archivo JSON indentado: source_{id}_{fecha}.json.
+  
+        /// Exporta un ítem puntual
+        /// en el formato estándar acordado entre los líderes de todos los grupos.
+        [HttpGet("items/{itemId:int}/export-standard")]
+        public async Task<ActionResult<StandardItemDto>> ExportItemStandard(int itemId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var result = await _sourceService.ExportItemStandardAsync(itemId, cancellationToken);
+                if (result is null)
+                    return NotFound($"No existe un ítem con Id {itemId}.");
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al exportar en formato estándar el ítem {ItemId}.", itemId);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Ocurrió un error inesperado al exportar el ítem.");
+            }
+        }
+
+        // Este metodo permite importar un ítem estándar hacia una fuente específica. Se espera que el DTO contenga al menos el campo 'name'.
+        [HttpPost("{id:int}/items/import-standard")]
+        [Authorize]
+        public async Task<ActionResult<SourceItemDto>> ImportStandardItem(int id, [FromBody] StandardItemDto dto, CancellationToken cancellationToken)
+        {
+            if (dto is null || string.IsNullOrWhiteSpace(dto.Name))
+                return BadRequest("El ítem estándar debe incluir al menos el campo 'name'.");
+
+            try
+            {
+                var saved = await _sourceService.ImportStandardItemAsync(id, dto, cancellationToken);
+                if (saved is null)
+                    return NotFound($"No existe una fuente con Id {id}.");
+
+                return CreatedAtAction(nameof(GetSourceItems), new { id }, saved);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al importar ítem estándar hacia la fuente {SourceId}.", id);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Ocurrió un error inesperado al importar el ítem.");
+            }
+        }
+
+        /// Descarga la fuente y todos sus ítems
         [HttpGet("{id:int}/download")]
         public async Task<IActionResult> DownloadSource(int id, CancellationToken cancellationToken)
         {
@@ -168,7 +213,6 @@ namespace PW.News8.API.Controllers
             }
         }
 
-        /// POST /api/sources/upload — Recibe un archivo JSON (multipart/form-data,
         /// campo "file") con el formato generado por /download e importa los ítems
         /// nuevos de la fuente indicada, descartando duplicados por contenido
         [HttpPost("upload")]
