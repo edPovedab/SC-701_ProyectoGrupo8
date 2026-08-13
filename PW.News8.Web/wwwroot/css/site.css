@@ -114,61 +114,72 @@ body {
     border-radius: 0.375rem;
 }
 
-/* ── Módulo Noticias (NewsAPI) — elemento sorpresa ──────────────────────── */
+/* ── Módulo Noticias (NewsAPI) — minimalista con acento teal ────────────── */
 
 .news-live-badge {
-    background-color: #fdecea;
-    color: #c62828;
+    background-color: #E1F5EE;
+    color: #0F6E56;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     font-weight: 600;
     font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
 }
 
 .live-dot {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background-color: #e53935;
+    background-color: #1D9E75;
     display: inline-block;
     animation: news-pulse 1.6s infinite;
 }
 
 @keyframes news-pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.5);
+        box-shadow: 0 0 0 0 rgba(29, 158, 117, 0.4);
     }
 
     70% {
-        box-shadow: 0 0 0 6px rgba(229, 57, 53, 0);
+        box-shadow: 0 0 0 6px rgba(29, 158, 117, 0);
     }
 
     100% {
-        box-shadow: 0 0 0 0 rgba(229, 57, 53, 0);
+        box-shadow: 0 0 0 0 rgba(29, 158, 117, 0);
     }
 }
 
 .news-filters-card {
     border: 1px solid rgba(0, 0, 0, 0.08);
-    background-color: #f8f9fb;
+    background-color: #ffffff;
 }
 
 .category-pill {
     text-transform: capitalize;
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #495057;
 }
+
+    .category-pill.active,
+    .category-pill:hover {
+        background-color: #E1F5EE;
+        color: #0F6E56;
+        border-color: #9FE1CB;
+    }
 
 .news-card {
     border: 1px solid rgba(0, 0, 0, 0.08);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: none;
+    transition: border-color 0.15s ease;
     overflow: hidden;
 }
 
     .news-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+        transform: none;
+        border-color: #9FE1CB;
+        box-shadow: none;
     }
 
 .news-card-img {
@@ -177,9 +188,20 @@ body {
 }
 
 .news-source-badge {
-    background-color: #e3f2fd;
-    color: #1565c0;
+    background-color: #E1F5EE;
+    color: #0F6E56;
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.03em;
 }
+
+.btn-outline-teal {
+    color: #0F6E56;
+    border-color: #5DCAA5;
+}
+
+    .btn-outline-teal:hover {
+        background-color: #0F6E56;
+        border-color: #0F6E56;
+        color: #ffffff;
+    }

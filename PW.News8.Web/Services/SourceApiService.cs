@@ -107,7 +107,25 @@ namespace PW.News8.Web.Services
             content.Add(streamContent, "file", fileName);
 
             var response = await _http.PostAsync("api/sources/upload", content, cancellationToken);
-            var result = await response.Content.ReadFromJsonAsync<SourceUploadResultDto>(JsonOptions, cancellationToken);
+
+            var rawContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.LogWarning("Upload respuesta - Status: {StatusCode} | Body: {Body}", response.StatusCode, rawContent);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return SourceUploadResultDto.Invalid($"Error del servidor ({(int)response.StatusCode} {response.StatusCode}): {rawContent}");
+            }
+
+            SourceUploadResultDto? result;
+            try
+            {
+                result = JsonSerializer.Deserialize<SourceUploadResultDto>(rawContent, JsonOptions);
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogWarning(ex, "No se pudo parsear la respuesta como JSON: {Body}", rawContent);
+                return SourceUploadResultDto.Invalid($"Respuesta no es JSON válido: {rawContent}");
+            }
 
             if (result is not null)
                 return result;

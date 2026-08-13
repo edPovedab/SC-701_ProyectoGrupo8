@@ -144,13 +144,37 @@ namespace PW.News8.API.Services
         {
             ArgumentNullException.ThrowIfNull(payload);
 
-            // Validación de estructura básica del JSON recibido
-            if (payload.Source is null || payload.Source.Id <= 0)
-                return SourceUploadResultDto.Invalid("El archivo no contiene una fuente válida (se requiere Source.Id).");
+            // Validación de estructura básica del JSON recibido: ya no exigimos Source.Id,
+            // pero sí necesitamos los datos mínimos para poder crear la fuente si no existe.
+            if (payload.Source is null
+                || string.IsNullOrWhiteSpace(payload.Source.Url)
+                || string.IsNullOrWhiteSpace(payload.Source.Name)
+                || string.IsNullOrWhiteSpace(payload.Source.ComponentType))
+            {
+                return SourceUploadResultDto.Invalid(
+                    "El archivo no contiene una fuente válida (se requieren Url, Name y ComponentType).");
+            }
 
-            var source = await _sourceRepository.GetByIdAsync(payload.Source.Id);
+            Source? source = null;
+
+            // Si el archivo trae un Id, intentamos reutilizar la fuente existente.
+            if (payload.Source.Id > 0)
+                source = await _sourceRepository.GetByIdAsync(payload.Source.Id);
+
+            // Si no existe (o no vino Id), la creamos con los datos del archivo.
             if (source is null)
-                return SourceUploadResultDto.NotFound(payload.Source.Id);
+            {
+                source = new Source
+                {
+                    Url = payload.Source.Url,
+                    Name = payload.Source.Name,
+                    Description = payload.Source.Description,
+                    ComponentType = payload.Source.ComponentType,
+                    RequiresSecret = payload.Source.RequiresSecret
+                };
+
+                await _sourceRepository.AddAsync(source);
+            }
 
             var incomingItems = payload.Items ?? new List<SourceItemExportDto>();
             if (incomingItems.Count == 0)
@@ -203,7 +227,7 @@ namespace PW.News8.API.Services
             }
             catch (System.Text.Json.JsonException)
             {
-               
+
             }
 
             string? Get(params string[] keys)
