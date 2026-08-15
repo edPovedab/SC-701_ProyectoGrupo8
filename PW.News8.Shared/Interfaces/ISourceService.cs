@@ -36,7 +36,7 @@ namespace PW.News8.Shared.Interfaces
         /// Procesa un paquete de importación: valida la fuente, descarta ítems
         /// duplicados (mismo contenido Json ya almacenado) e inserta el resto.
 
-        Task<SourceUploadResultDto> UploadSourceItemsAsync(SourceDownloadDto payload, CancellationToken cancellationToken = default);
+        Task<SourceUploadResultDto> UploadSourceItemsAsync(List<ApwImportItemDto> items, CancellationToken cancellationToken = default);
         /// Exporta un ítem puntual en el formato estándar acordado entre grupos.
         Task<StandardItemDto?> ExportItemStandardAsync(int itemId, CancellationToken cancellationToken = default);
 

@@ -141,7 +141,7 @@ namespace PW.News8.API.Controllers
             }
         }
 
-  
+
         /// Exporta un ítem puntual
         /// en el formato estándar acordado entre los líderes de todos los grupos.
         [HttpGet("items/{itemId:int}/export-standard")]
@@ -226,11 +226,21 @@ namespace PW.News8.API.Controllers
             if (!string.Equals(extension, ".json", StringComparison.OrdinalIgnoreCase))
                 return BadRequest("El archivo debe tener extensión .json.");
 
-            SourceDownloadDto? payload;
+            List<ApwImportItemDto>? items;
             try
             {
                 await using var stream = file.OpenReadStream();
-                payload = await JsonSerializer.DeserializeAsync<SourceDownloadDto>(stream, UploadJsonOptions, cancellationToken);
+                using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+
+                items = doc.RootElement.ValueKind switch
+                {
+                    JsonValueKind.Array => doc.RootElement.Deserialize<List<ApwImportItemDto>>(UploadJsonOptions),
+                    JsonValueKind.Object => new List<ApwImportItemDto>
+                    {
+                        doc.RootElement.Deserialize<ApwImportItemDto>(UploadJsonOptions) ?? new()
+                    },
+                    _ => null
+                };
             }
             catch (JsonException ex)
             {
@@ -238,12 +248,12 @@ namespace PW.News8.API.Controllers
                 return BadRequest("El archivo no contiene un JSON válido.");
             }
 
-            if (payload is null)
+            if (items is null || items.Count == 0)
                 return BadRequest("El archivo está vacío o no se pudo interpretar.");
 
             try
             {
-                var result = await _sourceService.UploadSourceItemsAsync(payload, cancellationToken);
+                var result = await _sourceService.UploadSourceItemsAsync(items, cancellationToken);
 
                 return result.Status switch
                 {

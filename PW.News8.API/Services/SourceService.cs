@@ -140,79 +140,101 @@ namespace PW.News8.API.Services
             return MapToItemDto(entity, source.Name);
         }
 
-        public async Task<SourceUploadResultDto> UploadSourceItemsAsync(SourceDownloadDto payload, CancellationToken cancellationToken = default)
+        /// Procesa un archivo en el formato estándar entre grupos: una lista de
+        /// ítems planos, cada uno con sus propios datos de artículo (Title,
+        /// Description, ImageUrl, Url, PublishedAt) y de fuente (SourceName,
+        /// SourceUrl, SourceDescription, SourceComponentType, SourceRequiresSecret).
+        /// Los ítems se agrupan por SourceUrl para reutilizar o crear cada fuente
+        /// una sola vez, y se descartan duplicados por contenido.
+        public async Task<SourceUploadResultDto> UploadSourceItemsAsync(List<ApwImportItemDto> items, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(payload);
+            if (items is null || items.Count == 0)
+                return SourceUploadResultDto.Invalid("El archivo no contiene ítems para importar.");
 
-            // Validación de estructura básica del JSON recibido: ya no exigimos Source.Id,
-            // pero sí necesitamos los datos mínimos para poder crear la fuente si no existe.
-            if (payload.Source is null
-                || string.IsNullOrWhiteSpace(payload.Source.Url)
-                || string.IsNullOrWhiteSpace(payload.Source.Name)
-                || string.IsNullOrWhiteSpace(payload.Source.ComponentType))
+            var invalid = items.FirstOrDefault(i =>
+                string.IsNullOrWhiteSpace(i.SourceUrl) ||
+                string.IsNullOrWhiteSpace(i.SourceName) ||
+                string.IsNullOrWhiteSpace(i.SourceComponentType));
+
+            if (invalid is not null)
             {
                 return SourceUploadResultDto.Invalid(
-                    "El archivo no contiene una fuente válida (se requieren Url, Name y ComponentType).");
+                    "Cada ítem debe incluir SourceUrl, SourceName y SourceComponentType.");
             }
 
-            Source? source = null;
+            var allSources = await _sourceRepository.GetAllAsync();
+            var sourceByUrl = allSources
+                .GroupBy(s => s.Url, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
 
-            // Si el archivo trae un Id, intentamos reutilizar la fuente existente.
-            if (payload.Source.Id > 0)
-                source = await _sourceRepository.GetByIdAsync(payload.Source.Id);
-
-            // Si no existe (o no vino Id), la creamos con los datos del archivo.
-            if (source is null)
+            var insertedTotal = 0;
+            var duplicateTotal = 0;
+            int lastSourceId = 0;
+            // Se agrupa por SourceUrl para no crear/consultar la misma fuente varias veces
+            // cuando el archivo trae varios ítems de la misma fuente.
+            foreach (var group in items.GroupBy(i => i.SourceUrl, StringComparer.OrdinalIgnoreCase))
             {
-                source = new Source
+                if (!sourceByUrl.TryGetValue(group.Key, out var source))
                 {
-                    Url = payload.Source.Url,
-                    Name = payload.Source.Name,
-                    Description = payload.Source.Description,
-                    ComponentType = payload.Source.ComponentType,
-                    RequiresSecret = payload.Source.RequiresSecret
-                };
+                    var first = group.First();
+                    source = new Source
+                    {
+                        Url = first.SourceUrl,
+                        Name = first.SourceName,
+                        Description = first.SourceDescription,
+                        ComponentType = first.SourceComponentType,
+                        RequiresSecret = first.SourceRequiresSecret
+                    };
 
-                await _sourceRepository.AddAsync(source);
-            }
-
-            var incomingItems = payload.Items ?? new List<SourceItemExportDto>();
-            if (incomingItems.Count == 0)
-                return SourceUploadResultDto.NoItems(source.Id);
-
-            // Set de contenidos ya existentes para esa fuente, usado para evitar duplicados
-            var existingItems = await _sourceItemRepository.GetBySourceIdAsync(source.Id);
-            var existingJsonSet = existingItems
-                .Select(item => item.Json.Trim())
-                .ToHashSet(StringComparer.Ordinal);
-
-            var newEntities = new List<SourceItem>();
-            var duplicateCount = 0;
-
-            foreach (var incoming in incomingItems)
-            {
-                var json = incoming.Json?.Trim();
-                if (string.IsNullOrWhiteSpace(json))
-                    continue; // ítem vacío/corrupto, se ignora silenciosamente
-
-                if (!existingJsonSet.Add(json))
-                {
-                    duplicateCount++; // ítem duplicado, se ignora
-                    continue;
+                    await _sourceRepository.AddAsync(source);
+                    sourceByUrl[group.Key] = source;
                 }
 
-                newEntities.Add(new SourceItem
+                lastSourceId = source.Id;
+
+                var existingItems = await _sourceItemRepository.GetBySourceIdAsync(source.Id);
+                var existingJsonSet = existingItems
+                    .Select(item => item.Json.Trim())
+                    .ToHashSet(StringComparer.Ordinal);
+
+                var newEntities = new List<SourceItem>();
+
+                foreach (var incoming in group)
                 {
-                    SourceId = source.Id,
-                    Json = json,
-                    CreatedAt = DateTime.Now
-                });
+                    var json = System.Text.Json.JsonSerializer.Serialize(new
+                    {
+                        title = incoming.Title,
+                        description = incoming.Description,
+                        imageUrl = incoming.ImageUrl,
+                        url = incoming.Url,
+                        publishedAt = incoming.PublishedAt
+                    }).Trim();
+
+                    if (!existingJsonSet.Add(json))
+                    {
+                        duplicateTotal++; // ítem duplicado, se ignora
+                        continue;
+                    }
+
+                    newEntities.Add(new SourceItem
+                    {
+                        SourceId = source.Id,
+                        Json = json,
+                        CreatedAt = DateTime.Now
+                    });
+                }
+
+                if (newEntities.Count > 0)
+                {
+                    await _sourceItemRepository.AddRangeAsync(newEntities);
+                    insertedTotal += newEntities.Count;
+                }
             }
 
-            if (newEntities.Count > 0)
-                await _sourceItemRepository.AddRangeAsync(newEntities);
+            if (insertedTotal == 0 && duplicateTotal == 0)
+                return SourceUploadResultDto.NoItems(lastSourceId);
 
-            return SourceUploadResultDto.Success(source.Id, newEntities.Count, duplicateCount);
+            return SourceUploadResultDto.Success(lastSourceId, insertedTotal, duplicateTotal);
         }
         public async Task<StandardItemDto?> ExportItemStandardAsync(int itemId, CancellationToken cancellationToken = default)
         {
