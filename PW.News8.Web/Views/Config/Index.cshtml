@@ -1,9 +1,12 @@
 @model List<PW.News8.Shared.DTOs.UserRoleDto>
 @{
     ViewData["Title"] = "Configuración";
+    var newUser = new PW.News8.Web.Models.RegisterViewModel();
+    var roles = new[] { "Admin", "Analista", "Gestor", "ServicioAlCliente" };
 }
 
-<h2 class="mb-4">Gestión de Usuarios y Roles</h2>
+<div class="wire-tag mb-2"><span class="wire-tag-dot"></span> Panel administrativo</div>
+<h1 class="h3 mb-4">Gestión de Usuarios y Roles</h1>
 
 @if (TempData["Message"] != null)
 {
@@ -13,35 +16,82 @@
     </div>
 }
 
-<table class="table table-bordered table-hover">
-    <thead class="table-dark">
-    <tr>
-        <th>Email</th>
-        <th>Rol actual</th>
-        <th>Cambiar rol</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var user in Model)
-    {
-        <tr>
-            <td>@user.Email</td>
-            <td>@user.Role</td>
-            <td>
-                <form method="post" asp-action="AssignRole">
-                    <input type="hidden" name="email" value="@user.Email" />
-                    <div class="d-flex gap-2">
-                        <select name="role" class="form-select form-select-sm">
-                            <option value="Admin" selected="@(user.Role == "Admin")">Admin</option>
-                            <option value="Analista" selected="@(user.Role == "Analista")">Analista</option>
-                            <option value="Gestor" selected="@(user.Role == "Gestor")">Gestor</option>
-                            <option value="ServicioAlCliente" selected="@(user.Role == "ServicioAlCliente")">Servicio al Cliente</option>
-                        </select>
-                        <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
-                    </div>
-                </form>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="press-pass-card p-4">
+            <div class="press-pass-eyebrow">
+                <span class="wire-tag-dot"></span> Nuevo acceso
+            </div>
+            <h2 class="h5 mb-3">Crear usuario</h2>
+
+            <form asp-controller="Config" asp-action="Register" method="post">
+                <div class="mb-3">
+                    <label asp-for="@newUser.Email" class="form-label"></label>
+                    <input asp-for="@newUser.Email" name="Email" class="form-control form-underline" autocomplete="off" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="@newUser.Password" class="form-label"></label>
+                    <input asp-for="@newUser.Password" name="Password" class="form-control form-underline" autocomplete="new-password" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="@newUser.ConfirmPassword" class="form-label"></label>
+                    <input asp-for="@newUser.ConfirmPassword" name="ConfirmPassword" class="form-control form-underline" autocomplete="new-password" />
+                </div>
+                <div class="mb-4">
+                    <label asp-for="@newUser.Role" class="form-label"></label>
+                    <select asp-for="@newUser.Role" name="Role" class="form-select">
+                        @foreach (var role in roles)
+                        {
+                            <option value="@role">@role</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Crear usuario</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="wire-tag mb-2"><span class="wire-tag-dot"></span> Usuarios registrados</div>
+        <table class="table table-bordered table-hover bg-white">
+            <thead class="table-dark">
+                <tr>
+                    <th>Email</th>
+                    <th>Rol actual</th>
+                    <th>Cambiar rol</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-4">
+                            No hay usuarios para mostrar todavía.
+                        </td>
+                    </tr>
+                }
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Email</td>
+                        <td>@user.Role</td>
+                        <td>
+                            <form method="post" asp-action="AssignRole">
+                                <input type="hidden" name="email" value="@user.Email" />
+                                <div class="d-flex gap-2">
+                                    <select name="role" class="form-select form-select-sm">
+                                        @foreach (var role in roles)
+                                        {
+                                            <option value="@role" selected="@(user.Role == role)">@role</option>
+                                        }
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

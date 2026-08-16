@@ -6,4 +6,5 @@ public interface IConfigApiService
 {
     Task<List<UserRoleDto>> GetUsersAsync(CancellationToken cancellationToken = default);
     Task<AuthResponseDto> AssignRoleAsync(string email, string role, CancellationToken cancellationToken = default);
+    Task<AuthResponseDto> RegisterAsync(RegisterDto dto, CancellationToken cancellationToken = default);
 }
